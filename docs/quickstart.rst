@@ -98,6 +98,26 @@ walk you through the basics:
 - Navigate to ``/login``.  You will see a login page.  You can now re-enter
   your user credentials and log into the site again.
 
+ID Site
+-------
+
+If you'd like to not worry about using your own registration and login
+screens at all, you can use Stormpath's new `ID site feature
+<http://docs.stormpath.com/guides/using-id-site/>`_.  This is a hosted login
+subdomain which handles authentication for you automatically.
+
+To make this work, you need to specify a few additional settings:
+
+    app.config['STORMPATH_ENABLE_ID_SITE'] = True
+    app.config['STORMPATH_ID_SITE_CALLBACK_URL'] = '/id-site-callback'
+
+.. note::
+    Please note that the ID Site callback URL must be a relative path and it must
+    match the one set in the Stormpath ID Site Dashboard.
+    For production pruposes your will probably also want to set app.config['SERVER_NAME']
+    for the relative callback url to be properly generated to match the absolute URL
+    specified in the Stormpath ID Site Dashboard.
+
 Wasn't that easy?!
 
 .. note::

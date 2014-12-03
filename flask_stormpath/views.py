@@ -7,6 +7,7 @@ from flask import (
     current_app,
     flash,
     redirect,
+    url_for,
     render_template,
     request,
 )
@@ -21,6 +22,7 @@ from .forms import (
     RegistrationForm,
 )
 from .models import User
+from .id_site import handle_id_site_callback
 
 
 def register():
@@ -399,3 +401,41 @@ def logout():
    """
     logout_user()
     return redirect('/')
+
+
+def id_site_login():
+    rdr = current_app.stormpath_manager.application.build_id_site_redirect_url(
+        callback_uri=url_for('stormpath.id_site_callback', _external=True),
+        state=request.args.get('state'))
+    return redirect(rdr)
+
+
+def id_site_register():
+    rdr = current_app.stormpath_manager.application.build_id_site_redirect_url(
+            callback_uri=url_for('stormpath.id_site_callback', _external=True),
+            state=request.args.get('state'),
+            path="/#/register")
+    return redirect(rdr)
+
+
+def id_site_forgot_password():
+    rdr = current_app.stormpath_manager.application.build_id_site_redirect_url(
+            callback_uri=url_for('stormpath.id_site_callback', _external=True),
+            state=request.args.get('state'),
+            path="/#/forgot")
+    return redirect(rdr)
+
+
+def id_site_logout():
+    rdr = current_app.stormpath_manager.application.build_id_site_redirect_url(
+            callback_uri=url_for('stormpath.id_site_callback', _external=True),
+            state=request.args.get('state'),
+            logout=True)
+    return redirect(rdr)
+
+
+def id_site_callback():
+    ret = current_app.stormpath_manager.application.handle_id_site_callback(
+            request.url)
+    return handle_id_site_callback(ret)
+

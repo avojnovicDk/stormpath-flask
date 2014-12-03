@@ -101,6 +101,13 @@ class User(Account):
         return _user
 
     @classmethod
+    def from_id_site(self, account):
+        _user = account
+        _user.__class__ = User
+
+        return _user
+
+    @classmethod
     def from_google(self, code):
         """
         Create a new User class given a Google access code.

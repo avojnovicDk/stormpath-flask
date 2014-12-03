@@ -55,6 +55,11 @@ from .views import (
     login,
     logout,
     register,
+    id_site_login,
+    id_site_logout,
+    id_site_register,
+    id_site_forgot_password,
+    id_site_callback,
 )
 
 
@@ -155,56 +160,96 @@ class StormpathManager(object):
 
         :param obj app: The Flask app.
         """
-        if app.config['STORMPATH_ENABLE_REGISTRATION']:
-            app.add_url_rule(
-                app.config['STORMPATH_REGISTRATION_URL'],
-                'stormpath.register',
-                register,
-                methods = ['GET', 'POST'],
-            )
 
-        if app.config['STORMPATH_ENABLE_LOGIN']:
+        if app.config['STORMPATH_ENABLE_ID_SITE']:
+
             app.add_url_rule(
                 app.config['STORMPATH_LOGIN_URL'],
                 'stormpath.login',
-                login,
-                methods = ['GET', 'POST'],
+                id_site_login,
+                methods = ['GET'],
             )
 
-        if app.config['STORMPATH_ENABLE_FORGOT_PASSWORD']:
+            app.add_url_rule(
+                app.config['STORMPATH_REGISTRATION_URL'],
+                'stormpath.register',
+                id_site_register,
+                methods = ['GET'],
+            )
+
             app.add_url_rule(
                 app.config['STORMPATH_FORGOT_PASSWORD_URL'],
                 'stormpath.forgot',
-                forgot,
-                methods = ['GET', 'POST'],
-            )
-            app.add_url_rule(
-                app.config['STORMPATH_FORGOT_PASSWORD_CHANGE_URL'],
-                'stormpath.forgot_change',
-                forgot_change,
-                methods = ['GET', 'POST'],
+                id_site_forgot_password,
+                methods = ['GET'],
             )
 
-        if app.config['STORMPATH_ENABLE_LOGOUT']:
             app.add_url_rule(
                 app.config['STORMPATH_LOGOUT_URL'],
                 'stormpath.logout',
-                logout,
+                id_site_logout,
+                methods = ['GET'],
             )
 
-        if app.config['STORMPATH_ENABLE_GOOGLE']:
             app.add_url_rule(
-                app.config['STORMPATH_GOOGLE_LOGIN_URL'],
-                'stormpath.google_login',
-                google_login,
+                app.config['STORMPATH_ID_SITE_CALLBACK_URL'],
+                'stormpath.id_site_callback',
+                id_site_callback,
+                methods = ['GET'],
             )
 
-        if app.config['STORMPATH_ENABLE_FACEBOOK']:
-            app.add_url_rule(
-                app.config['STORMPATH_FACEBOOK_LOGIN_URL'],
-                'stormpath.facebook_login',
-                facebook_login,
-            )
+        else:
+
+            if app.config['STORMPATH_ENABLE_REGISTRATION']:
+                app.add_url_rule(
+                    app.config['STORMPATH_REGISTRATION_URL'],
+                    'stormpath.register',
+                    register,
+                    methods = ['GET', 'POST'],
+                )
+
+            if app.config['STORMPATH_ENABLE_LOGIN']:
+                app.add_url_rule(
+                    app.config['STORMPATH_LOGIN_URL'],
+                    'stormpath.login',
+                    login,
+                    methods = ['GET', 'POST'],
+                )
+
+            if app.config['STORMPATH_ENABLE_FORGOT_PASSWORD']:
+                app.add_url_rule(
+                    app.config['STORMPATH_FORGOT_PASSWORD_URL'],
+                    'stormpath.forgot',
+                    forgot,
+                    methods = ['GET', 'POST'],
+                )
+                app.add_url_rule(
+                    app.config['STORMPATH_FORGOT_PASSWORD_CHANGE_URL'],
+                    'stormpath.forgot_change',
+                    forgot_change,
+                    methods = ['GET', 'POST'],
+                )
+
+            if app.config['STORMPATH_ENABLE_LOGOUT']:
+                app.add_url_rule(
+                    app.config['STORMPATH_LOGOUT_URL'],
+                    'stormpath.logout',
+                    logout,
+                )
+
+            if app.config['STORMPATH_ENABLE_GOOGLE']:
+                app.add_url_rule(
+                    app.config['STORMPATH_GOOGLE_LOGIN_URL'],
+                    'stormpath.google_login',
+                    google_login,
+                )
+
+            if app.config['STORMPATH_ENABLE_FACEBOOK']:
+                app.add_url_rule(
+                    app.config['STORMPATH_FACEBOOK_LOGIN_URL'],
+                    'stormpath.facebook_login',
+                    facebook_login,
+                )
 
     @property
     def client(self):
