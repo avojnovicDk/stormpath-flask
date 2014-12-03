@@ -19,6 +19,8 @@ def init_settings(config):
     config.setdefault('STORMPATH_API_KEY_SECRET', None)
     config.setdefault('STORMPATH_API_KEY_FILE', None)
     config.setdefault('STORMPATH_APPLICATION', None)
+    config.setdefault('STORMPATH_ENABLE_ID_SITE', False)
+    config.setdefault('STORMPATH_ID_SITE_CALLBACK_URL', None)
 
     # Which fields should be displayed when registering new users?
     config.setdefault('STORMPATH_ENABLE_FACEBOOK', False)
