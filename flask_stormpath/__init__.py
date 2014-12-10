@@ -15,8 +15,16 @@
 """
 
 
-__version_info__ = ('0', '2', '9')
-__version__ = '.'.join(__version_info__)
+from os.path import abspath, dirname, join
+
+
+# Dynamically find our version information from within setup.py.
+for line in open(join(dirname(dirname(abspath(__file__))), 'setup.py')).readlines():
+    if line.strip().startswith('version'):
+        __version__ = release = line.strip().split("'")[1]
+
+
+__version_info__ = __version__.split('.')
 __author__ = 'Stormpath, Inc.'
 __license__ = 'Apache'
 __copyright__ = '(c) 2012 - 2014 Stormpath, Inc.'
@@ -271,6 +279,7 @@ class StormpathManager(object):
                     ctx.stormpath_client = Client(
                         api_key_file_location = self.app.config['STORMPATH_API_KEY_FILE'],
                         user_agent = user_agent,
+                        cache_options = self.app.config['STORMPATH_CACHE'],
                     )
 
                 # If the user isn't specifying their credentials via a file
@@ -281,6 +290,7 @@ class StormpathManager(object):
                         id = self.app.config['STORMPATH_API_KEY_ID'],
                         secret = self.app.config['STORMPATH_API_KEY_SECRET'],
                         user_agent = user_agent,
+                        cache_options = self.app.config['STORMPATH_CACHE'],
                     )
 
             return ctx.stormpath_client

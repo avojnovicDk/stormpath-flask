@@ -73,6 +73,9 @@ def init_settings(config):
     # After a successful login, where should users be redirected?
     config.setdefault('STORMPATH_REDIRECT_URL', '/')
 
+    # Cache configuration.
+    config.setdefault('STORMPATH_CACHE', None)
+
     # Configure templates.  These template settings control which templates are
     # used to render the Flask-Stormpath views.
     config.setdefault('STORMPATH_REGISTRATION_TEMPLATE', 'flask_stormpath/register.html')

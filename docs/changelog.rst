@@ -10,9 +10,13 @@ All library changes, in descending order.
 Version 0.3.0
 -------------
 
-**Not yet released.**
+**Released on December 8, 2014.**
 
 - Fixing minor issue with user agent.
+- Updating stormpath dependency to latest release.
+- Adding support for caching (*with local memory, memcached, and redis*).
+- Adding caching docs.
+- Dynamically handling library versions.
 
 
 Version 0.2.9

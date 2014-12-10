@@ -868,6 +868,60 @@ then immediately redirected back to your website at the URL specified by
 Simple, right?!
 
 
+Enable Caching
+--------------
+
+The best kind of websites are fast websites.  Flask-Stormpath includes built-in
+support for caching.  You can currently use either:
+
+- A local memory cache (*default*).
+- A `memcached`_ cache.
+- A `redis`_ cache.
+
+All can be easily configured using configuration variables.
+
+There are several configuration settings you can specify to control caching
+behavior.
+
+Here's an example which shows how to enable caching with redis::
+
+    from stormpath.cache.redis_store import RedisStore
+
+
+    app = Flask(__name__)
+    app.config['STORMPATH_CACHE'] = {
+        'store': RedisStore,
+        'store_opts': {
+            'host': 'localhost',
+            'port': 6379
+        }
+    }
+
+    stormpath_manager = StormpathManager(app)
+
+Here's an example which shows how to enable caching with memcached::
+
+    from stormpath.cache.memcached_store import MemcachedStore
+
+
+    app = Flask(__name__)
+    app.config['STORMPATH_CACHE'] = {
+        'store': MemcachedStore,
+        'store_opts': {
+            'host': 'localhost',
+            'port': 11211,
+        }
+    }
+
+    stormpath_manager = StormpathManager(app)
+
+If no cache is specified, the default, ``MemoryStore``, is used.  This will
+cache all resources in local memory.
+
+For a full list of options available for each cache backend, please see the
+official `Caching Docs`_ in our Python library.
+
+
 .. _Account: http://docs.stormpath.com/rest/product-guide/#accounts
 .. _bootstrap: http://getbootstrap.com/
 .. _Jinja2: http://jinja.pocoo.org/docs/
@@ -877,3 +931,6 @@ Simple, right?!
 .. _Google Developer Console: https://console.developers.google.com/project
 .. _Developer Console: https://console.developers.google.com/project
 .. _Console Dashboard: https://console.developers.google.com/project
+.. _memcached: http://memcached.org/
+.. _redis: http://redis.io/
+.. _Caching Docs: https://docs.stormpath.com/python/product-guide/#caching
