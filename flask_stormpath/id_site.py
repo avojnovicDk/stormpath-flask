@@ -10,12 +10,20 @@ ID_SITE_STATUS_REGISTERED = 'REGISTERED'
 
 
 def _handle_authenticated(id_site_response):
+    """
+    Get user using :class:`stormpath.id_site.IdSiteCallbackResult`'s
+    :class:`stormpath.resources.account.Account` object. Login that
+    user.
+    """
     login_user(User.from_id_site(id_site_response.account),
             remember=True)
     return redirect(request.args.get('next') or current_app.config['STORMPATH_REDIRECT_URL'])
 
 
 def _handle_logout(id_site_response):
+    """
+    Logout current user.
+    """
     logout_user()
     return redirect('/')
 
@@ -24,6 +32,10 @@ _handle_registered = _handle_authenticated
 
 
 def handle_id_site_callback(id_site_response):
+    """
+    Handle different actions depending on
+    :class:`stormpath.id_site.IdSiteCallbackResult`'s status.
+    """
     if id_site_response:
         action = CALLBACK_ACTIONS[id_site_response.status]
         return action(id_site_response)

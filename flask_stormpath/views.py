@@ -398,12 +398,16 @@ def logout():
 
     This view will log a user out of their account (destroying their session),
     then redirect the user to the home page of the site.
-   """
+    """
     logout_user()
     return redirect('/')
 
 
 def id_site_login():
+    """
+    Use Stormpath SDK to generate the redirection URL for the ID Site
+    login page. Redirect the user to the ID Site URL.
+    """
     rdr = current_app.stormpath_manager.application.build_id_site_redirect_url(
         callback_uri=url_for('stormpath.id_site_callback', _external=True),
         state=request.args.get('state'))
@@ -411,6 +415,10 @@ def id_site_login():
 
 
 def id_site_register():
+    """
+    Use Stormpath SDK to generate the redirection URL for the ID Site
+    registration page. Redirect the user to the ID Site URL.
+    """
     rdr = current_app.stormpath_manager.application.build_id_site_redirect_url(
             callback_uri=url_for('stormpath.id_site_callback', _external=True),
             state=request.args.get('state'),
@@ -419,6 +427,10 @@ def id_site_register():
 
 
 def id_site_forgot_password():
+    """
+    Use Stormpath SDK to generate the redirection URL for the ID Site
+    forgot password page. Redirect the user to the ID Site URL.
+    """
     rdr = current_app.stormpath_manager.application.build_id_site_redirect_url(
             callback_uri=url_for('stormpath.id_site_callback', _external=True),
             state=request.args.get('state'),
@@ -427,6 +439,10 @@ def id_site_forgot_password():
 
 
 def id_site_logout():
+    """
+    Use Stormpath SDK to generate the redirection URL for the ID Site
+    logout page. Redirect the user to the ID Site URL.
+    """
     rdr = current_app.stormpath_manager.application.build_id_site_redirect_url(
             callback_uri=url_for('stormpath.id_site_callback', _external=True),
             state=request.args.get('state'),
@@ -435,6 +451,11 @@ def id_site_logout():
 
 
 def id_site_callback():
+    """
+    Use Stormpath SDK to get the
+    :class:`stormpath.id_site.IdSiteCallbackResult` object based on
+    callback URL. Handle the result.
+    """
     ret = current_app.stormpath_manager.application.handle_id_site_callback(
             request.url)
     return handle_id_site_callback(ret)

@@ -102,6 +102,10 @@ class User(Account):
 
     @classmethod
     def from_id_site(self, account):
+        """
+        Create a new User class given a
+        :class:`stormpath.resources.account.Account` object.
+        """
         _user = account
         _user.__class__ = User
 
