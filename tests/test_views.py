@@ -1,9 +1,7 @@
 """Run tests against our custom views."""
-
-
 from flask.ext.stormpath.models import User
 
-from .helpers import StormpathTestCase
+from .helpers import StormpathTestCase, StormpathIdSiteTestCase
 
 
 class TestRegister(StormpathTestCase):
@@ -147,3 +145,43 @@ class TestLogout(StormpathTestCase):
             # Log this user out.
             resp = c.get('/logout')
             self.assertEqual(resp.status_code, 302)
+
+
+class TestIdSite(StormpathIdSiteTestCase):
+    """Test our ID Site views."""
+
+    def test_id_site_login(self):
+        # Attempt a login redirects to ID Site
+        with self.app.test_client() as c:
+            resp = c.get('/login')
+            self.assertEqual(resp.status_code, 302)
+            self.assertTrue(
+                resp.headers['location'].startswith(
+                    'https://api.stormpath.com/sso?jwtRequest='))
+
+    def test_id_site_register(self):
+        # Attempt a registration redirects to ID Site
+        with self.app.test_client() as c:
+            resp = c.get('/register')
+            self.assertEqual(resp.status_code, 302)
+            self.assertTrue(
+                resp.headers['location'].startswith(
+                    'https://api.stormpath.com/sso?jwtRequest='))
+
+    def test_id_site_logout(self):
+        # Attempt a logout redirects to ID Site logout
+        with self.app.test_client() as c:
+            resp = c.get('/logout')
+            self.assertEqual(resp.status_code, 302)
+            self.assertTrue(
+                resp.headers['location'].startswith(
+                    'https://api.stormpath.com/sso/logout?jwtRequest='))
+
+    def test_id_site_forgot_password(self):
+        # Attempt a logout redirects to ID Site
+        with self.app.test_client() as c:
+            resp = c.get('/forgot')
+            self.assertEqual(resp.status_code, 302)
+            self.assertTrue(
+                resp.headers['location'].startswith(
+                    'https://api.stormpath.com/sso?jwtRequest='))

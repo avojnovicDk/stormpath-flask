@@ -43,6 +43,17 @@ class StormpathTestCase(TestCase):
             directory.delete()
 
 
+class StormpathIdSiteTestCase(StormpathTestCase):
+    """
+    StormpathTestCase with ID Site.
+    """
+    def setUp(self):
+        """Provision a new Client, Application, and Flask app with ID Site."""
+        self.client = bootstrap_client()
+        self.application = bootstrap_app(self.client)
+        self.app = bootstrap_flask_app(self.application, True)
+
+
 def bootstrap_client():
     """
     Create a new Stormpath Client from environment variables.
@@ -77,7 +88,7 @@ def bootstrap_app(client):
     }, create_directory=True)
 
 
-def bootstrap_flask_app(app):
+def bootstrap_flask_app(app, use_id_site=False):
     """
     Create a new, fully initialized Flask app.
 
@@ -92,6 +103,9 @@ def bootstrap_flask_app(app):
     a.config['STORMPATH_API_KEY_SECRET'] = environ.get('STORMPATH_API_KEY_SECRET')
     a.config['STORMPATH_APPLICATION'] = app.name
     a.config['WTF_CSRF_ENABLED'] = False
+    a.config['STORMPATH_ENABLE_ID_SITE'] = use_id_site
+    if use_id_site:
+        a.config['STORMPATH_ID_SITE_CALLBACK_URL'] = '/'
     StormpathManager(a)
 
     return a
