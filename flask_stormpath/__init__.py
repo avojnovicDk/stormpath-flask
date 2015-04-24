@@ -319,13 +319,9 @@ class StormpathManager(object):
         ctx = stack.top
         if ctx is not None:
             if not hasattr(ctx, 'stormpath_application'):
-                if self.app.config['STORMPATH_APPLICATION'].startswith('http'):
-                    ctx.stormpath_application = self.client.applications.get(
-                            self.app.config['STORMPATH_APPLICATION'])
-                else:
-                    ctx.stormpath_application = self.client.applications.search(
-                        self.app.config['STORMPATH_APPLICATION']
-                    )[0]
+                ctx.stormpath_application = self.client.applications.search(
+                    self.app.config['STORMPATH_APPLICATION']
+                )[0]
 
             return ctx.stormpath_application
 
