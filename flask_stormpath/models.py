@@ -164,3 +164,21 @@ class User(Account):
         _user.__class__ = User
 
         return _user
+
+    @classmethod
+    def from_linkedin(self, access_token):
+        """
+        Create a new User class given a LinkedIn access token.
+
+        Access tokens must be retrieved from LinkedIn's OAuth service (LinkedIn
+        Login).
+
+        If something goes wrong, this will raise an exception -- most likely --
+        a `StormpathError` (flask.ext.stormpath.StormpathError).
+        """
+        _user = current_app.stormpath_manager.application.get_provider_account(
+            access_token=access_token,
+            provider=Provider.LINKEDIN)
+        _user.__class__ = User
+
+        return _user

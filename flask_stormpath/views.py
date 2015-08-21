@@ -1,6 +1,8 @@
 """Our pluggable views."""
 
 
+import json
+import requests
 from facebook import get_user_from_cookie
 from flask import (
     abort,
@@ -394,6 +396,103 @@ def google_login():
 
     # Now we'll log the new user into their account.  From this point on, this
     # Google user will be treated exactly like a normal Stormpath user!
+    login_user(account, remember=True)
+
+    return redirect(request.args.get('next') or current_app.config['STORMPATH_REDIRECT_URL'])
+
+
+def linkedin_login():
+    """
+    Handle LinkedIn login.
+
+    When a user logs in with LinkedIn (using Javascript), LinkedIn will redirect
+    the user to this view, along with an access code for the user.
+
+    What we do here is grab this access code and send it to Stormpath to handle
+    the OAuth negotiation.  Once this is done, we log this user in using normal
+    sessions, and from this point on -- this user is treated like a normal
+    system user!
+
+    The location this view redirects users to can be configured via
+    Flask-Stormpath settings.
+    """
+    # First, we'll try to grab the 'code' query string that LinkedIn should be
+    # passing to us.  If this doesn't exist, we'll abort with a 400 BAD REQUEST
+    # (since something horrible must have happened).
+    code = request.args.get('code')
+    if not code:
+        abort(400)
+
+    # Then, we have to get the access token from LinkedIn using that code and
+    # LinkedIn credentials. If this doesn't exist, we'll abort with a 400 BAD
+    # REQUEST (since something horrible must have happened).
+    login_url = current_app.config['STORMPATH_LINKEDIN_LOGIN_URL']
+    linkedin_config = current_app.config['STORMPATH_SOCIAL']['LINKEDIN']
+    params = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': request.url_root[:-1] + login_url,
+        'client_id': linkedin_config['client_id'],
+        'client_secret': linkedin_config['client_secret']
+    }
+    response = requests.post(
+        'https://www.linkedin.com/uas/oauth2/accessToken', params=params)
+
+    access_token = json.loads(response.content).get('access_token')
+    if not access_token:
+        abort(400)
+
+    # Next, we'll try to have Stormpath either create or update this user's
+    # Stormpath account, by automatically handling the LinkedIn API stuff for us.
+    try:
+        account = User.from_linkedin(access_token)
+    except StormpathError as err:
+        social_directory_exists = False
+
+        # If we failed here, it usually means that this application doesn't
+        # have a LinkedIn directory -- so we'll create one!
+        for asm in current_app.stormpath_manager.application.account_store_mappings:
+
+            # If there is a LinkedIn directory, we know this isn't the problem.
+            if (
+                getattr(asm.account_store, 'provider') and
+                asm.account_store.provider.provider_id == Provider.LINKEDIN
+            ):
+                social_directory_exists = True
+                break
+
+        # If there is a LinkedIn directory already, we'll just pass on the
+        # exception we got.
+        if social_directory_exists:
+            raise err
+
+        # Otherwise, we'll try to create a LinkedIn directory on the user's
+        # behalf (magic!).
+        dir = current_app.stormpath_manager.client.directories.create({
+            'name': current_app.stormpath_manager.application.name + '-linkedin',
+            'provider': {
+                'client_id': current_app.config['STORMPATH_SOCIAL']['LINKEDIN']['client_id'],
+                'client_secret': current_app.config['STORMPATH_SOCIAL']['LINKEDIN']['client_secret'],
+                'redirect_uri': request.url_root[:-1] + current_app.config['STORMPATH_LINKEDIN_LOGIN_URL'],
+                'provider_id': Provider.LINKEDIN,
+            },
+        })
+
+        # Now that we have a LinkedIn directory, we'll map it to our application
+        # so it is active.
+        asm = current_app.stormpath_manager.application.account_store_mappings.create({
+            'application': current_app.stormpath_manager.application,
+            'account_store': dir,
+            'list_index': 99,
+            'is_default_account_store': False,
+            'is_default_group_store': False,
+        })
+
+        # Lastly, let's retry the LinkedIn login one more time.
+        account = User.from_linkedin(access_token)
+
+    # Now we'll log the new user into their account.  From this point on, this
+    # LinkedIn user will be treated exactly like a normal Stormpath user!
     login_user(account, remember=True)
 
     return redirect(request.args.get('next') or current_app.config['STORMPATH_REDIRECT_URL'])

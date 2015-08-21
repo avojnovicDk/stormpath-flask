@@ -50,6 +50,7 @@ from .settings import check_settings, init_settings
 from .views import (
     google_login,
     facebook_login,
+    linkedin_login,
     forgot,
     forgot_change,
     login,
@@ -204,6 +205,13 @@ class StormpathManager(object):
                 app.config['STORMPATH_FACEBOOK_LOGIN_URL'],
                 'stormpath.facebook_login',
                 facebook_login,
+            )
+
+        if app.config['STORMPATH_ENABLE_LINKEDIN']:
+            app.add_url_rule(
+                app.config['STORMPATH_LINKEDIN_LOGIN_URL'],
+                'stormpath.linkedin_login',
+                linkedin_login,
             )
 
     @property

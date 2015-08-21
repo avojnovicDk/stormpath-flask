@@ -67,6 +67,7 @@ def init_settings(config):
     config.setdefault('STORMPATH_SETTINGS_URL', '/settings')
     config.setdefault('STORMPATH_GOOGLE_LOGIN_URL', '/google')
     config.setdefault('STORMPATH_FACEBOOK_LOGIN_URL', '/facebook')
+    config.setdefault('STORMPATH_LINKEDIN_LOGIN_URL', '/linkedin')
 
     # After a successful login, where should users be redirected?
     config.setdefault('STORMPATH_REDIRECT_URL', '/')
@@ -134,6 +135,16 @@ def check_settings(config):
             facebook_config.get('app_secret'),
         ]):
             raise ConfigurationError('You must define your Facebook app settings.')
+
+    if config['STORMPATH_ENABLE_LINKEDIN']:
+        linkedin_config = config['STORMPATH_SOCIAL'].get('LINKEDIN')
+
+        if not linkedin_config or not all([
+            linkedin_config,
+            linkedin_config.get('client_id'),
+            linkedin_config.get('client_secret'),
+        ]):
+            raise ConfigurationError('You must define your LinkedIn app settings.')
 
     if config['STORMPATH_COOKIE_DOMAIN'] and not isinstance(config['STORMPATH_COOKIE_DOMAIN'], str):
         raise ConfigurationError('STORMPATH_COOKIE_DOMAIN must be a string.')

@@ -48,7 +48,7 @@
               </div>
             </form>
           </div>
-          {% if config['STORMPATH_ENABLE_FACEBOOK'] or config['STORMPATH_ENABLE_GOOGLE'] %}
+          {% if config['STORMPATH_ENABLE_FACEBOOK'] or config['STORMPATH_ENABLE_GOOGLE'] or config['STORMPATH_ENABLE_LINKEDIN'] %}
             <div class="social-area col-xs-12 col-sm-4">
               <div class="header">&nbsp;</div>
               <label>Easy 1-click login:</label>
@@ -57,6 +57,9 @@
               {% endif %}
               {% if config['STORMPATH_ENABLE_GOOGLE'] %}
                 {% include "flask_stormpath/google_login_form.html" %}
+              {% endif %}
+              {% if config['STORMPATH_ENABLE_LINKEDIN'] %}
+                {% include "flask_stormpath/linkedin_login_form.html" %}
               {% endif %}
             </div>
           {% endif %}

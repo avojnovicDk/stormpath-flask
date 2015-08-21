@@ -104,6 +104,26 @@ class TestCheckSettings(StormpathTestCase):
         self.app.config['STORMPATH_SOCIAL']['FACEBOOK']['app_secret'] = 'xxx'
         check_settings(self.app.config)
 
+    def test_linkedin_settings(self):
+        # Ensure that if the user has LinkedIn login enabled, they've specified
+        # the correct settings.
+        self.app.config['STORMPATH_ENABLE_LINKEDIN'] = True
+        self.assertRaises(ConfigurationError, check_settings, self.app.config)
+
+        # Ensure that things don't work if not all social configs are specified.
+        self.app.config['STORMPATH_SOCIAL'] = {}
+        self.assertRaises(ConfigurationError, check_settings, self.app.config)
+
+        self.app.config['STORMPATH_SOCIAL'] = {'LINKEDIN': {}}
+        self.assertRaises(ConfigurationError, check_settings, self.app.config)
+
+        self.app.config['STORMPATH_SOCIAL']['LINKEDIN']['client_id'] = 'xxx'
+        self.assertRaises(ConfigurationError, check_settings, self.app.config)
+
+        # Now that we've configured things properly, it should work.
+        self.app.config['STORMPATH_SOCIAL']['LINKEDIN']['client_secret'] = 'xxx'
+        check_settings(self.app.config)
+
     def test_cookie_settings(self):
         # Ensure that if a user specifies a cookie domain which isn't a string,
         # an error is raised.

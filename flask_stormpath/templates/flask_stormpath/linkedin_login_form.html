@@ -1,0 +1,10 @@
+<button class="btn btn-social btn-linkedin" onclick="linkedinLogin()">LinkedIn</button>
+<script>
+  function linkedinLogin() {
+      var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+          return v.toString(16);
+      });
+          window.location.replace('https://www.linkedin.com/uas/oauth2/authorization?response_type=code&client_id={{ config['STORMPATH_SOCIAL']['LINKEDIN']['client_id'] }}&redirect_uri={{ (request.url_root[:-1] + config['STORMPATH_LINKEDIN_LOGIN_URL'])|urlencode }}&scope=r_emailaddress{% if config["STORMPATH_SOCIAL"]["LINKEDIN"].get("scopes") %}+{{ "+".join(config["STORMPATH_SOCIAL"]["LINKEDIN"]["scopes"]) }}{% endif %}&state=' + uuid);
+  }
+</script>
